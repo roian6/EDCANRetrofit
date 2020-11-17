@@ -1,5 +1,7 @@
 package com.david0926.edcanretrofit.ui.main;
 
+import android.util.Log;
+
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableArrayList;
 import androidx.lifecycle.MutableLiveData;
@@ -8,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.david0926.edcanretrofit.data.model.Food;
 import com.david0926.edcanretrofit.data.repository.MainRepository;
+
+import java.io.IOException;
 
 public class MainViewModel extends ViewModel {
 
@@ -19,9 +23,10 @@ public class MainViewModel extends ViewModel {
 
     public MutableLiveData<String> error = new MutableLiveData<>("");
 
-    public void refreshList() {
+    public void load() {
         isLoaded.setValue(false);
         MainRepository.getFoods(search.getValue(), page.getValue(), response -> {
+
             isLoaded.setValue(true);
             if (response == null) {
                 error.setValue("null response");
@@ -29,11 +34,19 @@ public class MainViewModel extends ViewModel {
             }
             if (page.getValue() == 1) foodList.clear();
             foodList.addAll(response.getList());
+            Log.d("baam", "refreshList: res");
         }, errorBody -> {
+            Log.d("baam", "refreshList: err");
             isLoaded.setValue(true);
             if (errorBody == null) return;
-            error.setValue(errorBody.getResultCode() + ": " + errorBody.getResultMessage());
+            try {
+                Log.d("baam", "refreshList: "+errorBody.string());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //error.setValue(errorBody.getResultCode() + ": " + errorBody.getResultMessage());
         }, t -> {
+            Log.d("baam", "refreshList: fail");
             isLoaded.setValue(true);
             error.setValue(t.getLocalizedMessage());
             t.printStackTrace();

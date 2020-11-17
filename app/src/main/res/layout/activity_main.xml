@@ -25,17 +25,42 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="식품정보 앱" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_main"
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_box"
+            android:backgroundTint="@color/materialGray1"
+            android:hint="식품 이름을 입력하세요"
+            android:padding="16dp"
+            android:text="@={viewModel.search}"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_main"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:bindFoodItems="@{viewModel.foodList}"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            tools:listitem="@layout/row_food" />
+            app:layout_constraintTop_toBottomOf="@+id/editText">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:bindFoodItems="@{viewModel.foodList}"
+                tools:listitem="@layout/row_food" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

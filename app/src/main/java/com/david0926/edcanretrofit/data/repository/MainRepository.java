@@ -4,8 +4,11 @@ import com.david0926.edcanretrofit.BuildConfig;
 import com.david0926.edcanretrofit.data.model.FoodRequest;
 import com.david0926.edcanretrofit.data.model.FoodResponse;
 import com.david0926.edcanretrofit.data.network.RetrofitClient;
-import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,7 +20,7 @@ public class MainRepository {
     }
 
     public interface OnGetFoodsError {
-        void error(FoodResponse errorBody);
+        void error(ResponseBody errorBody);
     }
 
     public interface OnGetFoodsFailure {
@@ -25,13 +28,18 @@ public class MainRepository {
     }
 
     public static void getFoods(String search, Integer page, OnGetFoodsSuccess onSuccess, OnGetFoodsError onError, OnGetFoodsFailure onFailure) {
-        FoodRequest request = FoodRequest.builder()
-                .ServiceKey(BuildConfig.API_KEY)
-                .pageNo(page.toString())
-                .prdlstNm(search)
-                .returnType("json")
-                .numOfRows(String.valueOf(10))
-                .build();
+        FoodRequest request = null;
+        try {
+            request = FoodRequest.builder()
+                    .ServiceKey(URLDecoder.decode(BuildConfig.API_KEY, "utf-8"))
+                    .pageNo(page.toString())
+                    .prdlstNm(search)
+                    .returnType("json")
+                    .numOfRows(String.valueOf(10))
+                    .build();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         RetrofitClient.foodService.getFoods(
                 request.getServiceKey(),
@@ -44,8 +52,7 @@ public class MainRepository {
             @Override
             public void onResponse(Call<FoodResponse> call, Response<FoodResponse> response) {
                 if (!response.isSuccessful()) {
-                    Gson gson = new Gson();
-                    onError.error(gson.fromJson(gson.toJson(response.errorBody()), FoodResponse.class));
+                    onError.error(response.errorBody());
                 } else onSuccess.success(response.body());
             }
 

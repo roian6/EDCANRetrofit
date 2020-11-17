@@ -8,7 +8,7 @@ import retrofit2.http.Query;
 
 public interface FoodService {
 
-    @GET("/getCertImgListService")
+    @GET("/B553748/CertImgListService/getCertImgListService")
     Call<FoodResponse> getFoods(
             @Query("ServiceKey") String ServiceKey,
             @Query("prdlstReportNo") String prdlstReportNo,

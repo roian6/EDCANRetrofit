@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.david0926.edcanretrofit.data.model.Food;
@@ -17,7 +18,12 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
     private List<Food> items = new ArrayList<>();
 
     public void setItems(List<Food> items) {
-        this.items = items;
+        final MainRecyclerDiffCallback callback = new MainRecyclerDiffCallback(this.items, items);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(callback);
+
+        this.items.clear();
+        this.items.addAll(items);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public interface OnItemClick {
@@ -60,5 +66,34 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         return items.size();
     }
 
+    public class MainRecyclerDiffCallback extends DiffUtil.Callback {
 
+        private final List<Food> oldList;
+        private final List<Food> newList;
+
+        public MainRecyclerDiffCallback(List<Food> oldList, List<Food> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getRnum().equals(newList.get(newItemPosition).getRnum());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getPrdlstNm().equals(newList.get(newItemPosition).getPrdlstNm());
+        }
+    }
 }
